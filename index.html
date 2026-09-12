@@ -5,618 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>绝密文件 · 扫码启封</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    overflow-x: hidden;
-    position: relative;
-    padding: 40px 20px 120px;
-  }
-  .bg-particles {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    z-index: 0;
-  }
-  .particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: rgba(255, 215, 0, 0.6);
-    border-radius: 50%;
-    animation: float 6s ease-in-out infinite;
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
-    50% { transform: translateY(-30px) scale(1.5); opacity: 1; }
-  }
-  .card {
-    position: relative;
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 24px;
-    padding: 40px 32px;
-    text-align: center;
-    max-width: 640px;
-    width: 100%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    animation: cardIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(40px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .stamp {
-    display: inline-block;
-    border: 3px solid #e74c3c;
-    color: #e74c3c;
-    font-size: 14px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    padding: 6px 16px;
-    border-radius: 6px;
-    transform: rotate(-8deg);
-    margin-bottom: 20px;
-    animation: stampPulse 2s ease-in-out infinite;
-  }
-  @keyframes stampPulse {
-    0%, 100% { transform: rotate(-8deg) scale(1); }
-    50% { transform: rotate(-8deg) scale(1.05); }
-  }
-  h1 {
-    font-size: 28px;
-    font-weight: 900;
-    color: #ffd700;
-    margin-bottom: 8px;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-    letter-spacing: 2px;
-  }
-  .subtitle {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 32px;
-    letter-spacing: 1px;
-  }
-  .qr-grid {
-    display: flex;
-    gap: 24px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
-  .qr-item {
-    flex: 1;
-    min-width: 200px;
-    max-width: 260px;
-  }
-  .qr-wrapper {
-    position: relative;
-    display: inline-block;
-    padding: 14px;
-    background: #fff;
-    border-radius: 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  }
-  .qr-wrapper.pdf { box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3); }
-  .qr-wrapper.doubao { box-shadow: 0 10px 30px rgba(74, 108, 247, 0.3); }
-  .qr-wrapper img {
-    display: block;
-    width: 180px;
-    height: 180px;
-    border-radius: 8px;
-  }
-  .qr-label {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .qr-label.pdf { color: #e74c3c; }
-  .qr-label.doubao { color: #6c8cff; }
-  .qr-desc {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
-  }
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 24px 0;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
-  }
-  .divider span {
-    font-size: 12px;
-    color: rgba(255, 215, 0, 0.8);
-    letter-spacing: 2px;
-    white-space: nowrap;
-  }
-  .tip-box {
-    background: rgba(255, 215, 0, 0.08);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 12px;
-    padding: 16px 20px;
-    text-align: left;
-    margin-bottom: 20px;
-  }
-  .tip-box p {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.8;
-  }
-  .tip-box strong { color: #ffd700; }
-  .hint {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-  .hint-small {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 1px;
-  }
-  .corner {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    border-color: #ffd700;
-    border-style: solid;
-  }
-  .corner-tl { top: 10px; left: 10px; border-width: 3px 0 0 3px; border-radius: 8px 0 0 0; }
-  .corner-tr { top: 10px; right: 10px; border-width: 3px 3px 0 0; border-radius: 0 8px 0 0; }
-  .corner-bl { bottom: 10px; left: 10px; border-width: 0 0 3px 3px; border-radius: 0 0 0 8px; }
-  .corner-br { bottom: 10px; right: 10px; border-width: 0 3px 3px 0; border-radius: 0 0 8px 0; }
-
-  .pet-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 100;
-    pointer-events: none;
-    will-change: transform;
-  }
-  .pet {
-    position: relative;
-    width: 90px;
-    height: 100px;
-    cursor: pointer;
-    pointer-events: auto;
-    transition: transform 0.15s ease-out;
-  }
-  .pet:active { transform: scale(0.92); }
-  .pet-body-wrap {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 70px;
-    height: 75px;
-    transform: translateX(-50%);
-    animation: petIdle 2.4s ease-in-out infinite;
-    transform-origin: bottom center;
-  }
-  @keyframes petIdle {
-    0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
-    25% { transform: translateX(-50%) translateY(-3px) rotate(-1.5deg); }
-    75% { transform: translateX(-50%) translateY(-3px) rotate(1.5deg); }
-  }
-  .pet.walking .pet-body-wrap {
-    animation: petWalkBob 0.4s ease-in-out infinite;
-  }
-  @keyframes petWalkBob {
-    0%, 100% { transform: translateX(-50%) translateY(0) rotate(-2deg); }
-    50% { transform: translateX(-50%) translateY(-5px) rotate(2deg); }
-  }
-  .pet-tail {
-    position: absolute;
-    bottom: 20px;
-    right: -8px;
-    width: 22px;
-    height: 30px;
-    background: linear-gradient(180deg, #fff5f7, #ffd0dc);
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    transform-origin: bottom left;
-    animation: tailWag 1.2s ease-in-out infinite;
-    z-index: 0;
-  }
-  @keyframes tailWag {
-    0%, 100% { transform: rotate(-15deg); }
-    50% { transform: rotate(20deg); }
-  }
-  .pet.walking .pet-tail {
-    animation: tailWagFast 0.35s ease-in-out infinite;
-  }
-  @keyframes tailWagFast {
-    0%, 100% { transform: rotate(-25deg); }
-    50% { transform: rotate(35deg); }
-  }
-  .pet-body {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 64px;
-    height: 62px;
-    background: linear-gradient(180deg, #fff5f7 0%, #ffe0e8 100%);
-    border-radius: 50% 50% 45% 45%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 -4px 8px rgba(255,150,170,0.2);
-    z-index: 1;
-  }
-  .pet-ear {
-    position: absolute;
-    top: -6px;
-    width: 18px;
-    height: 24px;
-    background: linear-gradient(180deg, #fff5f7, #ffd0dc);
-    border-radius: 50% 50% 30% 30%;
-    z-index: 0;
-    transform-origin: bottom center;
-  }
-  .pet-ear.left { left: 6px; transform: rotate(-18deg); animation: earTwitchLeft 5s ease-in-out infinite; }
-  .pet-ear.right { right: 6px; transform: rotate(18deg); animation: earTwitchRight 5.5s ease-in-out infinite; }
-  @keyframes earTwitchLeft {
-    0%, 92%, 100% { transform: rotate(-18deg); }
-    94% { transform: rotate(-30deg); }
-    96% { transform: rotate(-10deg); }
-    98% { transform: rotate(-18deg); }
-  }
-  @keyframes earTwitchRight {
-    0%, 88%, 100% { transform: rotate(18deg); }
-    90% { transform: rotate(30deg); }
-    92% { transform: rotate(10deg); }
-    94% { transform: rotate(18deg); }
-  }
-  .pet-ear::after {
-    content: '';
-    position: absolute;
-    top: 6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 8px;
-    height: 12px;
-    background: #ffb3c6;
-    border-radius: 50%;
-  }
-  .pet-eye {
-    position: absolute;
-    top: 20px;
-    width: 13px;
-    height: 15px;
-    background: #2d2d2d;
-    border-radius: 50%;
-    overflow: hidden;
-    z-index: 2;
-    animation: blink 4.5s ease-in-out infinite;
-  }
-  .pet-eye.left { left: 14px; }
-  .pet-eye.right { right: 14px; }
-  .pet-eye::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 3px;
-    width: 5px;
-    height: 5px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform 0.1s ease-out;
-  }
-  .pet-eye::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 3px;
-    height: 3px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 50%;
-  }
-  @keyframes blink {
-    0%, 46%, 54%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(0.08); }
-  }
-  .pet-cheek {
-    position: absolute;
-    top: 34px;
-    width: 11px;
-    height: 7px;
-    background: #ff9eb5;
-    border-radius: 50%;
-    opacity: 0.65;
-    z-index: 2;
-  }
-  .pet-cheek.left { left: 8px; }
-  .pet-cheek.right { right: 8px; }
-  .pet-mouth {
-    position: absolute;
-    top: 37px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 11px;
-    height: 7px;
-    border: 2px solid #2d2d2d;
-    border-top: none;
-    border-radius: 0 0 12px 12px;
-    z-index: 2;
-    transition: all 0.2s ease;
-  }
-  .pet.happy .pet-mouth {
-    width: 14px;
-    height: 9px;
-    border-width: 2.5px;
-  }
-  .pet-foot {
-    position: absolute;
-    bottom: -4px;
-    width: 16px;
-    height: 10px;
-    background: linear-gradient(180deg, #ffd0dc, #ffb3c6);
-    border-radius: 50%;
-    z-index: 0;
-  }
-  .pet-foot.left { left: 12px; }
-  .pet-foot.right { right: 12px; }
-  .pet-bubble {
-    position: absolute;
-    bottom: 85px;
-    left: 50%;
-    transform: translateX(-50%) scale(0) translateY(10px);
-    background: #fff;
-    color: #333;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 16px;
-    white-space: nowrap;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none;
-    z-index: 10;
-  }
-  .pet-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 8px solid #fff;
-  }
-  .pet.talking .pet-bubble {
-    opacity: 1;
-    transform: translateX(-50%) scale(1) translateY(0);
-  }
-  .pet-heart {
-    position: absolute;
-    top: 0;
-    font-size: 18px;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 5;
-  }
-  .pet.loved .pet-heart {
-    animation: heartFloat 1.2s ease-out forwards;
-  }
-  @keyframes heartFloat {
-    0% { opacity: 1; transform: translateY(0) scale(0.4) rotate(0deg); }
-    30% { opacity: 1; transform: translateY(-20px) scale(1.1) rotate(-10deg); }
-    100% { opacity: 0; transform: translateY(-50px) scale(0.8) rotate(15deg); }
-  }
-  .pet.sleeping .pet-eye {
-    animation: none;
-    height: 3px;
-    top: 26px;
-    border-radius: 3px;
-  }
-  .pet-sleep-z {
-    position: absolute;
-    top: -10px;
-    right: 0;
-    font-size: 16px;
-    color: rgba(255,255,255,0.7);
-    font-weight: 700;
-    opacity: 0;
-    animation: sleepZ 2s ease-in-out infinite;
-  }
-  .pet.sleeping .pet-sleep-z { opacity: 1; }
-  @keyframes sleepZ {
-    0% { opacity: 0; transform: translateY(0) scale(0.5); }
-    30% { opacity: 0.8; }
-    100% { opacity: 0; transform: translateY(-25px) scale(1.2); }
-  }
-  .pet-shadow {
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 10px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 50%;
-    filter: blur(3px);
-    animation: shadowPulse 2.4s ease-in-out infinite;
-  }
-  @keyframes shadowPulse {
-    0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.3; }
-    50% { transform: translateX(-50%) scaleX(0.85); opacity: 0.2; }
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);overflow-x:hidden;position:relative;padding:40px 20px 120px}
+.bg-particles{position:absolute;inset:0;overflow:hidden;z-index:0}
+.particle{position:absolute;width:4px;height:4px;background:rgba(255,215,0,.6);border-radius:50%;animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) scale(1);opacity:.6}50%{transform:translateY(-30px) scale(1.5);opacity:1}}
+.card{position:relative;z-index:1;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,215,0,.3);border-radius:24px;padding:40px 32px;text-align:center;max-width:640px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1);animation:cardIn .8s cubic-bezier(.16,1,.3,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.stamp{display:inline-block;border:3px solid #e74c3c;color:#e74c3c;font-size:14px;font-weight:900;letter-spacing:4px;padding:6px 16px;border-radius:6px;transform:rotate(-8deg);margin-bottom:20px;animation:stampPulse 2s ease-in-out infinite}
+@keyframes stampPulse{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(-8deg) scale(1.05)}}
+h1{font-size:28px;font-weight:900;color:#ffd700;margin-bottom:8px;text-shadow:0 0 20px rgba(255,215,0,.5);letter-spacing:2px}
+.subtitle{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:32px;letter-spacing:1px}
+.qr-grid{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.qr-item{flex:1;min-width:200px;max-width:260px}
+.qr-wrapper{position:relative;display:inline-block;padding:14px;background:#fff;border-radius:16px;margin-bottom:12px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.qr-wrapper.pdf{box-shadow:0 10px 30px rgba(231,76,60,.3)}
+.qr-wrapper.doubao{box-shadow:0 10px 30px rgba(74,108,247,.3)}
+.qr-wrapper img{display:block;width:180px;height:180px;border-radius:8px}
+.qr-label{font-size:15px;font-weight:700;margin-bottom:4px}
+.qr-label.pdf{color:#e74c3c}
+.qr-label.doubao{color:#6c8cff}
+.qr-desc{font-size:12px;color:rgba(255,255,255,.5)}
+.divider{display:flex;align-items:center;gap:12px;margin:24px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.4),transparent)}
+.divider span{font-size:12px;color:rgba(255,215,0,.8);letter-spacing:2px;white-space:nowrap}
+.tip-box{background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:12px;padding:16px 20px;text-align:left;margin-bottom:20px}
+.tip-box p{font-size:13px;color:rgba(255,255,255,.7);line-height:1.8}
+.tip-box strong{color:#ffd700}
+.hint{font-size:14px;color:rgba(255,255,255,.8);font-weight:600;margin-bottom:4px}
+.hint-small{font-size:12px;color:rgba(255,255,255,.4);letter-spacing:1px}
+.corner{position:absolute;width:28px;height:28px;border-color:#ffd700;border-style:solid}
+.corner-tl{top:10px;left:10px;border-width:3px 0 0 3px;border-radius:8px 0 0 0}
+.corner-tr{top:10px;right:10px;border-width:3px 3px 0 0;border-radius:0 8px 0 0}
+.corner-bl{bottom:10px;left:10px;border-width:0 0 3px 3px;border-radius:0 0 0 8px}
+.corner-br{bottom:10px;right:10px;border-width:0 3px 3px 0;border-radius:0 0 8px 0}
+.pet-container{position:fixed;bottom:0;left:0;z-index:100;pointer-events:none;will-change:transform}
+.pet{position:relative;width:90px;height:100px;cursor:pointer;pointer-events:auto;transition:transform .15s ease-out}
+.pet:active{transform:scale(.92)}
+.pet-body-wrap{position:absolute;bottom:0;left:50%;width:70px;height:75px;transform:translateX(-50%);animation:petIdle 2.4s ease-in-out infinite;transform-origin:bottom center}
+@keyframes petIdle{0%,100%{transform:translateX(-50%) translateY(0) rotate(0)}25%{transform:translateX(-50%) translateY(-3px) rotate(-1.5deg)}75%{transform:translateX(-50%) translateY(-3px) rotate(1.5deg)}}
+.pet.walking .pet-body-wrap{animation:petWalkBob .4s ease-in-out infinite}
+@keyframes petWalkBob{0%,100%{transform:translateX(-50%) translateY(0) rotate(-2deg)}50%{transform:translateX(-50%) translateY(-5px) rotate(2deg)}}
+.pet-tail{position:absolute;bottom:20px;right:-8px;width:22px;height:30px;background:linear-gradient(180deg,#fff5f7,#ffd0dc);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;transform-origin:bottom left;animation:tailWag 1.2s ease-in-out infinite;z-index:0}
+@keyframes tailWag{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(20deg)}}
+.pet.walking .pet-tail{animation:tailWagFast .35s ease-in-out infinite}
+@keyframes tailWagFast{0%,100%{transform:rotate(-25deg)}50%{transform:rotate(35deg)}}
+.pet-body{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:64px;height:62px;background:linear-gradient(180deg,#fff5f7 0%,#ffe0e8 100%);border-radius:50% 50% 45% 45%;box-shadow:0 4px 12px rgba(0,0,0,.15),inset 0 -4px 8px rgba(255,150,170,.2);z-index:1}
+.pet-ear{position:absolute;top:-6px;width:18px;height:24px;background:linear-gradient(180deg,#fff5f7,#ffd0dc);border-radius:50% 50% 30% 30%;z-index:0;transform-origin:bottom center}
+.pet-ear.left{left:6px;transform:rotate(-18deg);animation:earTwitchLeft 5s ease-in-out infinite}
+.pet-ear.right{right:6px;transform:rotate(18deg);animation:earTwitchRight 5.5s ease-in-out infinite}
+@keyframes earTwitchLeft{0%,92%,100%{transform:rotate(-18deg)}94%{transform:rotate(-30deg)}96%{transform:rotate(-10deg)}98%{transform:rotate(-18deg)}}
+@keyframes earTwitchRight{0%,88%,100%{transform:rotate(18deg)}90%{transform:rotate(30deg)}92%{transform:rotate(10deg)}94%{transform:rotate(18deg)}}
+.pet-ear::after{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);width:8px;height:12px;background:#ffb3c6;border-radius:50%}
+.pet-eye{position:absolute;top:20px;width:13px;height:15px;background:#2d2d2d;border-radius:50%;overflow:hidden;z-index:2;animation:blink 4.5s ease-in-out infinite}
+.pet-eye.left{left:14px}.pet-eye.right{right:14px}
+.pet-eye::before{content:'';position:absolute;top:2px;left:3px;width:5px;height:5px;background:#fff;border-radius:50%;transition:transform .1s ease-out}
+.pet-eye::after{content:'';position:absolute;bottom:2px;right:2px;width:3px;height:3px;background:rgba(255,255,255,.5);border-radius:50%}
+@keyframes blink{0%,46%,54%,100%{transform:scaleY(1)}50%{transform:scaleY(.08)}}
+.pet-cheek{position:absolute;top:34px;width:11px;height:7px;background:#ff9eb5;border-radius:50%;opacity:.65;z-index:2}
+.pet-cheek.left{left:8px}.pet-cheek.right{right:8px}
+.pet-mouth{position:absolute;top:37px;left:50%;transform:translateX(-50%);width:11px;height:7px;border:2px solid #2d2d2d;border-top:none;border-radius:0 0 12px 12px;z-index:2;transition:all .2s ease}
+.pet.happy .pet-mouth{width:14px;height:9px;border-width:2.5px}
+.pet-foot{position:absolute;bottom:-4px;width:16px;height:10px;background:linear-gradient(180deg,#ffd0dc,#ffb3c6);border-radius:50%;z-index:0}
+.pet-foot.left{left:12px}.pet-foot.right{right:12px}
+.pet-bubble{position:absolute;bottom:85px;left:50%;transform:translateX(-50%) scale(0) translateY(10px);background:#fff;color:#333;font-size:12px;font-weight:600;padding:8px 14px;border-radius:16px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.15);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;z-index:10}
+.pet-bubble::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #fff}
+.pet.talking .pet-bubble{opacity:1;transform:translateX(-50%) scale(1) translateY(0)}
+.pet-heart{position:absolute;top:0;font-size:18px;opacity:0;pointer-events:none;z-index:5}
+.pet.loved .pet-heart{animation:heartFloat 1.2s ease-out forwards}
+@keyframes heartFloat{0%{opacity:1;transform:translateY(0) scale(.4) rotate(0)}30%{opacity:1;transform:translateY(-20px) scale(1.1) rotate(-10deg)}100%{opacity:0;transform:translateY(-50px) scale(.8) rotate(15deg)}}
+.pet.sleeping .pet-eye{animation:none;height:3px;top:26px;border-radius:3px}
+.pet-sleep-z{position:absolute;top:-10px;right:0;font-size:16px;color:rgba(255,255,255,.7);font-weight:700;opacity:0;animation:sleepZ 2s ease-in-out infinite}
+.pet.sleeping .pet-sleep-z{opacity:1}
+@keyframes sleepZ{0%{opacity:0;transform:translateY(0) scale(.5)}30%{opacity:.8}100%{opacity:0;transform:translateY(-25px) scale(1.2)}}
+.pet-shadow{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:50px;height:10px;background:rgba(0,0,0,.2);border-radius:50%;filter:blur(3px);animation:shadowPulse 2.4s ease-in-out infinite}
+@keyframes shadowPulse{0%,100%{transform:translateX(-50%) scaleX(1);opacity:.3}50%{transform:translateX(-50%) scaleX(.85);opacity:.2}}
 </style>
 </head>
 <body>
-  <div class="bg-particles" id="particles"></div>
-  <div class="card">
-    <div class="corner corner-tl"></div>
-    <div class="corner corner-tr"></div>
-    <div class="corner corner-bl"></div>
-    <div class="corner corner-br"></div>
-    <div class="stamp">机密 · CONFIDENTIAL</div>
-    <h1>绝密文件已送达</h1>
-    <p class="subtitle">请使用手机扫码 · 即刻启封</p>
-    <div class="qr-grid">
-      <div class="qr-item">
-        <div class="qr-wrapper pdf">
-          <img src="https://static1.showapi.com/app2/img/qrCode/20260912/1789189459391.png" alt="PDF文件二维码">
-        </div>
-        <div class="qr-label pdf">📄 PDF 文件</div>
-        <div class="qr-desc">扫码直接查看文档</div>
-      </div>
-      <div class="qr-item">
-        <div class="qr-wrapper doubao">
-          <img src="https://static1.showapi.com/app2/img/qrCode/20260912/1789190143857.png" alt="豆包官网二维码">
-        </div>
-        <div class="qr-label doubao">🤖 豆包官网</div>
-        <div class="qr-desc">扫码打开 AI 助手</div>
-      </div>
-    </div>
-    <div class="divider"><span>一码两站方案</span></div>
-    <div class="tip-box">
-      <p>💡 想要<strong>一个二维码同时跳两个站</strong>？将同目录下的 <strong>jump_page.html</strong> 部署到任意静态托管（如 GitHub Pages、Vercel、Netlify），拿到公网 URL 后用该 URL 生成二维码，扫码后就会出现两个按钮，分别跳转到 PDF 和豆包。</p>
-    </div>
-    <p class="hint">📱 打开微信 / QQ / 浏览器扫一扫</p>
-    <p class="hint-small">— 扫码即代表同意查看机密内容 —</p>
-  </div>
-  <div class="pet-container">
-    <div class="pet" id="pet">
-      <div class="pet-bubble" id="petBubble">扫码呀~ ♡</div>
-      <div class="pet-heart">💖</div>
-      <div class="pet-sleep-z">z</div>
-      <div class="pet-body-wrap">
-        <div class="pet-tail"></div>
-        <div class="pet-body">
-          <div class="pet-ear left"></div>
-          <div class="pet-ear right"></div>
-          <div class="pet-eye left" id="eyeLeft"></div>
-          <div class="pet-eye right" id="eyeRight"></div>
-          <div class="pet-cheek left"></div>
-          <div class="pet-cheek right"></div>
-          <div class="pet-mouth"></div>
-        </div>
-        <div class="pet-foot left"></div>
-        <div class="pet-foot right"></div>
-      </div>
-      <div class="pet-shadow"></div>
-    </div>
-  </div>
+<div class="bg-particles" id="particles"></div>
+<div class="card">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div><div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<div class="stamp">机密 · CONFIDENTIAL</div>
+<h1>绝密文件已送达</h1>
+<p class="subtitle">请使用手机扫码 · 即刻启封</p>
+<div class="qr-grid">
+<div class="qr-item"><div class="qr-wrapper pdf"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAjoAAAI6CAIAAAChKnWXAAAWhElEQVR42u3WwWHDMAwDwOy/dDpEYxMgD381tSTi9PmKiIjE52MLREQEVyIiIrgSERFciYiI4EpERARXIiKCKxEREVyJiIjgSkREcCUiIoIrERHBlYiICK5ERERwJSIiuBIREcGViIgIrkREBFciIiK4EhER+RdXn3V57nv/85efO6Op05/6ouf+q7EBjjyFzAnNnCMdiytc4QpXuMIVrnBlzHCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4wpWtxBWucIUrXOEKV7jCFa5wpWNxhStc4QpXuMLVnuGf4sog7S7KxsLKnLLG59e+6Q49I1uJK1zhClemG1e4whWucIUrHYsrXOEKV7jCFa5spQuNK1zhCle4whWucIUrXOlYXOEKV7jCFa5whSsXGle4whWucIUrXOEKV7jCFa5whStc4cp04yq8+vetzTyFTFQaTzCzCjPv8zVE93UsrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4wpWOxRWucIUrXOEKV7YSV7jCFa5whStc4crp4wpXOhZXuMIVrnCFK1zZyt/vVSNImeM9lcydNGW7accVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc2Upc4QpXuMIVrnCFK1zhClc6Fle4whWucIUrXNlKXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCldntrLwQu8r98w72fi9jbcu84x0LK5whStcuXW4wpWtxBWucIUrXOEKV7jCFa5wpWNxhStc4QpXuMKVrVQcuMIVrnCFK1zhCle4wpWOxRWucIUrXOEKV7hSHLjCFa5whStc4QpXbh2ucPX2VmZe6GtXp3GA91Vw4xll/m7jF+lYXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1uJK1zhCle4whWucIUrXOFKx+IKV7jCFa5whausMcusfmuttdbalmdu5SMJV0bFWmutxRWucGWttdZaiytc4cpaa63FFa5wZVSstdZaXOEKV9Zaa621OhZXuLLWWmtxhStcWWuttdbiCle4stZaa63FFa5cd2uttRZXp7i6lqkrO/VFjeM9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rnCFK22GKweMK1zhClfaDFdqBVe4whWucKUacIUrXOFKm+HKAeMKV7jCFa5whStc4QpXuMKVA8YVrnCFK22GKweMK3cSV7jCFa5whStc4Uqb3eIq8/gbvyhzNxpBagS4sfqvTfe+e5V5N3CFK1zhClfuFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7hSK7jCFa5whStc4QpX7hWucIUrXOEKV7jCFa5wpVZwhStc4QpXuMIVrtwrXKXXt7UJpZNZK/vO1+knwHDtXo3tJK5wpbBw5fRxhStrcYUrXOEKV7iyFle4cvq4whWucIUrXOEKV7iyFle4whWucIUraxUWrpw+rnCl+nGFK1zhCle4shZXuMIVrnCFK2sVFq6cPq5OcdVYso1f1FjQKvide6Vk35myxvNtpB1XuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWu5kclM40XK/OL9pVd45289hi91maZDw5c4QpXuMKVNsMVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWuHDCucIUrXOEKV7jCFa5whStc4QpXuMIVrrQZrqAClYuVlAlD453MPP3GR1Lj0w1XuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5wdYura+PdSGzmqGTWaOPTbR8qmc0wNaFTJ5jJJK5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFq1tcNV6OfSAZhoQ76fQTbk7jg+Na5+AKV7jCFa5whStc+SJc4QpXuMIVrnCFK1zhCle4whWucIUrXOFKueMKV7jCFa5whStc4QpXuMIVrlwdXOEKV7jClXLHFa5whStc4QpXuMIVrnCFqzc+uPGArxXWVDKrofFONoLUeIKZ57twunGFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXJ3iampE9w3h1F7tu+6NJesJlT/7zijie3GFK1zhClfOCFe4whWuVCGucIUrXOEKV7jCFa5whStc4QpXzghXuMIVrlQhrnCFK1zhCle4whWucIUrXOEKV84IV7jCFa5UIa5whStc4crw48oZ4eonW9nI5FQF74PQo6Ed/sze+Eh7A+MKV3YDV7gSXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7hS0LjCFa5whStc4QpXuMIVrnCFK1zhCle4whWuFLTdwBWuBFeLB/jaiD53KRtLFhv559u4z41Pc1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7h6g6tr1QDCggtdWO6NbDTejcbndeOzAFe4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIWrU1xlVsO+XKuVxhFtfEKZ3/bTb3ya4wpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuHLdcYUrXOEKV7gSXOEKV7jCFa5whStcmV9c4QpXuMIVrnCFK1zhCle4whWucHW3oBtHdOGlLPzda1zteyS5Vwm3Dle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa7UCq5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7i6m2sFjZx3niP7Ksmz750pyzwjXOEKV7jCFa5wJcodV7jCFa5whStc4QpXuMIVrnDli3CFK1zhSnCFK1zhCle4whWucIUrXOEKV7jyRbjCFa5whStc4QpXuMIVrnCFK1zhCle4+g1Xn3XZNyrXHg1TY9ZY/ft+N7Rkj92rB2cfV7jCFa5whStc4QpXuMIVrnCFK1zhCld+F1e4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whSu1gitc4Sq8RjMvZeM+N4535ojuK0pz5HcfOUFc4QpXuMIVNnCFK1zhCle48ru4whWucIUrbOAKV7jCFa7sBjZwpWRxhStc4crv4gpXuMIVrrCBK1zhCle4MqF+F1e4whWucIUrv4srXOEKV7jCBq7CayVzgDO/KPMvT43ZVDJPcN90N+5G443FFa5whStc4QpXLjSucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStcmW5c4QpXuMIVrnCFK1zhCle4whWucIWrK1w1VuG+O3nt5nwL0/jA+q4LrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMKVGsUVrnCFK1zhClf2GVe4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4wtVdrvxX7ec79UWZp5956649dK49v3AFBlzhCle4whWu/Fe4whWucIUrMOAKV7jCFa5whSvniytc4QpXuPJf4QpXuMIVrsCAK1zhCle4whWucIUrXOEKV7jyX+EKV7jCFa7AgCtc4QpXuHqjGh784KH/eV9BNwLc+L2effnVv68nQ1sUV7jCFa5whStc2Whc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrXOEKV7jCFa5whStc4QpXuKpOI0iKI//BMXUn931R4+8iFle4wpVyxxWucIUrXOEKV7jCFa5whStc4QpXuMIVrnCl3HGFK1zhCle4whWucIUrXOEKV74IV7jCFa5whStc4QpXuMIVrnCFK1zhCle4whWucIUrERGR3OBKRERwJSIigisREcGViIgIrkRERHAlIiK4EhERwZWIiAiuREQEVyIiIrgSERFciYiI4EpERARXIiKCKxEREVyJiIjgSkREcCUiIoIrERGR7x8vJM+EN4/KzAAAAABJRU5ErkJggg==" alt="PDF文件二维码"></div><div class="qr-label pdf">📄 PDF 文件</div><div class="qr-desc">扫码直接查看文档</div></div>
+<div class="qr-item"><div class="qr-wrapper doubao"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAACbCAIAAAD6A37bAAACgUlEQVR42u3aS3LDQAgFQN//0skNUuUM76FPs7UtaWgWGPT5Ec+KjxQQFUQFUTEm+mnF5BkObpQ7wlYmiRIlSpQoUaIx0VzeT85fu1HuMYKZJEqUKFGiRImWRI96sINPt3rda1YwUaJEiRIlSvTdooOfDh6h9lREiRIlSpQo0XeL1uZtuZ0uUaJEiRIlSvTporWp2B2rwcabKFGiRIkSfbpoLq45I7zI9PEok0SJEiVKlCjRMdFbxGCtbM0Ig8khSpQoUaJEiZZETwZstVe2BvlrRxgsHaJEiRIlSpRoTDSXu9yltn57leonSpQoUaJEie5s07a62a2tbW7cOFgrRIkSJUqUKNGYaG04lwPO5T1XdsH9KFGiRIkSJUq0tE3LJXqwXx28cm6CeDRQJEqUKFGiRImOiea2erlUnhBu1Wjuy0SJEiVKlCjRmGiuFdyamW39tve/gChRokSJEiWaEs11lVvd7DVfJAvuR4kSJUqUKFGiKdHcvrC28hyca+YeozfXJUqUKFGiRIn+Jfq83NVGlRdpjIkSJUqUKFGisV43l9lc3nPjxl6/urXxJkqUKFGiRImOPcfgCW9RSdesUaJEiRIlSpTo0syoti7NTR9zC+AtfqJEiRIlSpRoq9fNRS6VWzfKzReJEiVKlChRonfodXOJzk0faw15rSiJEiVKlChRojHRWjeb6yr1ukSJEiVKlCjRjOjW+K12qcHj12qUKFGiRIkSJfoy0Tvet9bcEiVKlChRokQfJ1obsOUWsTng775MlChRokSJEi2Jvm0xmeMPXoooUaJEiRIlmhK9yEawtra8RY0e9bpEiRIlSpQo0S9Exd2DKFFBVBAV/49fTLQ+KTpcwEQAAAAASUVORK5CYII=" alt="豆包官网二维码"></div><div class="qr-label doubao">🤖 豆包官网</div><div class="qr-desc">扫码打开 AI 助手</div></div>
+</div>
+<div class="divider"><span>一码两站方案</span></div>
+<div class="tip-box"><p>💡 想要<strong>一个二维码同时跳两个站</strong>？将同目录下的 <strong>jump_page.html</strong> 部署到任意静态托管（如 GitHub Pages、Vercel、Netlify），拿到公网 URL 后用该 URL 生成二维码，扫码后就会出现两个按钮，分别跳转到 PDF 和豆包。</p></div>
+<p class="hint">📱 打开微信 / QQ / 浏览器扫一扫</p>
+<p class="hint-small">— 扫码即代表同意查看机密内容 —</p>
+</div>
+<div class="pet-container"><div class="pet" id="pet"><div class="pet-bubble" id="petBubble">扫码呀~ ♡</div><div class="pet-heart">💖</div><div class="pet-sleep-z">z</div><div class="pet-body-wrap"><div class="pet-tail"></div><div class="pet-body"><div class="pet-ear left"></div><div class="pet-ear right"></div><div class="pet-eye left" id="eyeLeft"></div><div class="pet-eye right" id="eyeRight"></div><div class="pet-cheek left"></div><div class="pet-cheek right"></div><div class="pet-mouth"></div></div><div class="pet-foot left"></div><div class="pet-foot right"></div></div><div class="pet-shadow"></div></div></div>
 <script>
-  const container = document.getElementById('particles');
-  for (let i = 0; i < 30; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    p.style.left = Math.random() * 100 + '%';
-    p.style.top = Math.random() * 100 + '%';
-    p.style.animationDelay = Math.random() * 6 + 's';
-    p.style.animationDuration = (4 + Math.random() * 4) + 's';
-    container.appendChild(p);
-  }
-  const pet = document.getElementById('pet');
-  const bubble = document.getElementById('petBubble');
-  const eyeLeft = document.getElementById('eyeLeft');
-  const eyeRight = document.getElementById('eyeRight');
-  const phrases = ['扫码呀~ ♡', '点我干嘛~', '嘻嘻嘻 ♪', '快去扫码！', '你好呀~', '机密哦！', '喵~', '别走嘛~', '摸摸头~', '好无聊呀'];
-  let phraseIdx = 0;
-  let isWalking = true;
-  let isSleeping = false;
-  let direction = 1;
-  let posX = 0;
-  let walkSpeed = 1.2;
-  let lastActivity = Date.now();
-  function walk() {
-    if (!isWalking || isSleeping) return;
-    posX += direction * walkSpeed;
-    const maxX = window.innerWidth - 90;
-    if (posX >= maxX) { posX = maxX; direction = -1; }
-    if (posX <= 0) { posX = 0; direction = 1; }
-    pet.style.transform = 'translateX(' + posX + 'px) scaleX(' + direction + ')';
-    requestAnimationFrame(walk);
-  }
-  walk();
-  function setWalking(walking) {
-    isWalking = walking;
-    pet.classList.toggle('walking', walking);
-  }
-  function say(text, duration) {
-    duration = duration || 2200;
-    bubble.textContent = text;
-    pet.classList.add('talking');
-    lastActivity = Date.now();
-    setTimeout(function() { pet.classList.remove('talking'); }, duration);
-  }
-  pet.addEventListener('click', function() {
-    if (isSleeping) {
-      isSleeping = false;
-      pet.classList.remove('sleeping');
-      say('唔...醒啦！');
-      setWalking(true);
-      return;
-    }
-    phraseIdx = (phraseIdx + 1) % phrases.length;
-    say(phrases[phraseIdx]);
-    pet.classList.add('loved', 'happy');
-    setTimeout(function() { pet.classList.remove('loved'); }, 1200);
-    setTimeout(function() { pet.classList.remove('happy'); }, 1500);
-  });
-  pet.addEventListener('mouseenter', function() {
-    if (!isSleeping) {
-      pet.classList.add('happy');
-      setWalking(false);
-      lastActivity = Date.now();
-    }
-  });
-  pet.addEventListener('mouseleave', function() {
-    pet.classList.remove('happy');
-    if (!isSleeping) setWalking(true);
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (isSleeping) return;
-    const petRect = pet.getBoundingClientRect();
-    const cx = petRect.left + petRect.width / 2;
-    const cy = petRect.top + petRect.height / 2;
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-    const angle = Math.atan2(dy, dx);
-    const dist = Math.min(3, Math.hypot(dx, dy) / 100);
-    const ox = Math.cos(angle) * dist;
-    const oy = Math.sin(angle) * dist;
-    eyeLeft.style.transform = 'translate(' + (ox * 0.5) + 'px, ' + (oy * 0.5) + 'px)';
-    eyeRight.style.transform = 'translate(' + (ox * 0.5) + 'px, ' + (oy * 0.5) + 'px)';
-  });
-  setInterval(function() {
-    if (isSleeping) return;
-    const idle = Date.now() - lastActivity;
-    if (idle > 15000 && Math.random() < 0.3) {
-      isSleeping = true;
-      pet.classList.add('sleeping');
-      setWalking(false);
-      say('呼...好困~', 1500);
-      return;
-    }
-    const r = Math.random();
-    if (r < 0.25) {
-      phraseIdx = Math.floor(Math.random() * phrases.length);
-      say(phrases[phraseIdx]);
-    } else if (r < 0.4) {
-      setWalking(false);
-      setTimeout(function() { if (!isSleeping) setWalking(true); }, 2000 + Math.random() * 2000);
-    }
-  }, 4000);
-  window.addEventListener('resize', function() {
-    const maxX = window.innerWidth - 90;
-    if (posX > maxX) posX = maxX;
-  });
+var container=document.getElementById('particles');
+for(var i=0;i<30;i++){var p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';p.style.animationDelay=Math.random()*6+'s';p.style.animationDuration=(4+Math.random()*4)+'s';container.appendChild(p);}
+var pet=document.getElementById('pet'),bubble=document.getElementById('petBubble'),eyeLeft=document.getElementById('eyeLeft'),eyeRight=document.getElementById('eyeRight');
+var phrases=['扫码呀~ ♡','点我干嘛~','嘻嘻嘻 ♪','快去扫码！','你好呀~','机密哦！','喵~','别走嘛~','摸摸头~','好无聊呀'];
+var phraseIdx=0,isWalking=true,isSleeping=false,direction=1,posX=0,walkSpeed=1.2,lastActivity=Date.now();
+function walk(){if(!isWalking||isSleeping)return;posX+=direction*walkSpeed;var maxX=window.innerWidth-90;if(posX>=maxX){posX=maxX;direction=-1;}if(posX<=0){posX=0;direction=1;}pet.style.transform='translateX('+posX+'px) scaleX('+direction+')';requestAnimationFrame(walk);}
+walk();
+function setWalking(w){isWalking=w;pet.classList.toggle('walking',w);}
+function say(text,duration){duration=duration||2200;bubble.textContent=text;pet.classList.add('talking');lastActivity=Date.now();setTimeout(function(){pet.classList.remove('talking');},duration);}
+pet.addEventListener('click',function(){if(isSleeping){isSleeping=false;pet.classList.remove('sleeping');say('唔...醒啦！');setWalking(true);return;}phraseIdx=(phraseIdx+1)%phrases.length;say(phrases[phraseIdx]);pet.classList.add('loved','happy');setTimeout(function(){pet.classList.remove('loved');},1200);setTimeout(function(){pet.classList.remove('happy');},1500);});
+pet.addEventListener('mouseenter',function(){if(!isSleeping){pet.classList.add('happy');setWalking(false);lastActivity=Date.now();}});
+pet.addEventListener('mouseleave',function(){pet.classList.remove('happy');if(!isSleeping)setWalking(true);});
+document.addEventListener('mousemove',function(e){if(isSleeping)return;var r=pet.getBoundingClientRect();var cx=r.left+r.width/2,cy=r.top+r.height/2;var dx=e.clientX-cx,dy=e.clientY-cy;var angle=Math.atan2(dy,dx);var dist=Math.min(3,Math.hypot(dx,dy)/100);var ox=Math.cos(angle)*dist,oy=Math.sin(angle)*dist;eyeLeft.style.transform='translate('+(ox*0.5)+'px,'+(oy*0.5)+'px)';eyeRight.style.transform='translate('+(ox*0.5)+'px,'+(oy*0.5)+'px)';});
+setInterval(function(){if(isSleeping)return;var idle=Date.now()-lastActivity;if(idle>15000&&Math.random()<0.3){isSleeping=true;pet.classList.add('sleeping');setWalking(false);say('呼...好困~',1500);return;}var r=Math.random();if(r<0.25){phraseIdx=Math.floor(Math.random()*phrases.length);say(phrases[phraseIdx]);}else if(r<0.4){setWalking(false);setTimeout(function(){if(!isSleeping)setWalking(true);},2000+Math.random()*2000);}},4000);
+window.addEventListener('resize',function(){var maxX=window.innerWidth-90;if(posX>maxX)posX=maxX;});
 </script>
 </body>
 </html>
